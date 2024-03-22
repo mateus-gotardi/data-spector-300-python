@@ -40,7 +40,23 @@ def fix_next_cicle_date(date):
         mm = date.split('/')[0]
     return yy+'-'+mm
 
+def calc_totalPeriod(data):
+    inicio = make_yy_mm(data[0][2])
+    fim = make_yy_mm(data[-1][2])
+    years = int(fim.split('-')[0])-int(inicio.split('-')[0])+1
+    ano_inicio = int(inicio.split('-')[0])
+    keys = []
+    for i in range(years):
+        ano = str(i+ano_inicio)
+        for i in range(12):
+            dia = str(i+1)
+            if len(dia) < 2:
+                dia =('0'+dia)
+            keys.append(ano+'-'+dia)
+    return keys
+
 def calc_data(data):
+    period = calc_totalPeriod(data)
     novas_assinaturas = {}
     churn_cancels = {}
     churn_amount = {}
@@ -98,17 +114,21 @@ def calc_data(data):
     monthly_user_grow = {}
     user_grow = 0
     mrr_mensal = {}
-    for mes, num_clients in new_clients.items():
-        user_grow += num_clients
+    for mes in period:
+        user_grow += new_clients.get(mes,0)
         monthly_user_grow[mes] = user_grow
-        clients_active_monthly += num_clients - churn_cancels.get(mes, 0)
+        clients_active_monthly += new_clients.get(mes,0) - churn_cancels.get(mes, 0)
         cancels_monthly += churn_cancels.get(mes,0)
         prev_month = get_prev_month(mes)
         mrr_prev = 0
         if prev_month in mrr_mensal:
             mrr_prev = mrr_mensal.get(prev_month,0)
         mrr_mensal[mes] = (mrr_prev+novas_assinaturas.get(mes,0))-churn_amount.get(mes,0)
+        churn_amount[mes] = churn_amount.get(mes,0)
         active_clients[mes] = clients_active_monthly
+        churn_cancels[mes] = churn_cancels.get(mes,0)
+        churn_details[mes] = churn_details.get(mes,[])
+        new_clients[mes] = new_clients.get(mes,0)
         churn_rate_monthly[mes] = (churn_cancels.get(mes, 0)/active_clients.get(prev_month, clients_active_monthly))*100
 
     response = {
