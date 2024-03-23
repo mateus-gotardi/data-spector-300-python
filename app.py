@@ -25,7 +25,9 @@ def get_next_month(data):
     return proximo_mes_formatado
 
 def make_yy_mm(x):
-    year = x.split('/')[2].split(' ')[0]
+    year = x.split('/')[2]
+    if ' ' in year:
+        year = year.split(' ')[0]
     month = x.split('/')[0]
     if len(month) == 1:
         month = '0'+month
@@ -43,20 +45,24 @@ def fix_next_cicle_date(date):
 def calc_totalPeriod(data):
     inicio = make_yy_mm(data[0][2])
     fim = make_yy_mm(data[-1][2])
-    years = int(fim.split('-')[0])-int(inicio.split('-')[0])+1
+    years_ = int(fim.split('-')[0])-int(inicio.split('-')[0])+1
     ano_inicio = int(inicio.split('-')[0])
     keys = []
-    for i in range(years):
+    years = []
+    for i in range(years_):
         ano = str(i+ano_inicio)
+        years.append(ano)
         for i in range(12):
             dia = str(i+1)
             if len(dia) < 2:
                 dia =('0'+dia)
             keys.append(ano+'-'+dia)
-    return keys
+    return {'keys': keys, 'years': years}
 
 def calc_data(data):
-    period = calc_totalPeriod(data)
+    period_ = calc_totalPeriod(data)
+    period = period_.get('keys', [])
+    years = period_.get('years', [])
     novas_assinaturas = {}
     churn_cancels = {}
     churn_amount = {}
@@ -116,13 +122,14 @@ def calc_data(data):
     mrr_mensal = {}
     for mes in period:
         user_grow += new_clients.get(mes,0)
-        monthly_user_grow[mes] = user_grow
         clients_active_monthly += new_clients.get(mes,0) - churn_cancels.get(mes, 0)
         cancels_monthly += churn_cancels.get(mes,0)
         prev_month = get_prev_month(mes)
         mrr_prev = 0
         if prev_month in mrr_mensal:
             mrr_prev = mrr_mensal.get(prev_month,0)
+        novas_assinaturas[mes]= novas_assinaturas.get(mes,0)
+        monthly_user_grow[mes] = user_grow
         mrr_mensal[mes] = (mrr_prev+novas_assinaturas.get(mes,0))-churn_amount.get(mes,0)
         churn_amount[mes] = churn_amount.get(mes,0)
         active_clients[mes] = clients_active_monthly
@@ -148,7 +155,9 @@ def calc_data(data):
             'users_active': active_clients,
             'churn_details': churn_details,
             'user_growth': monthly_user_grow,
-        }   
+        },
+        'years': years,
+        'months': period
     }
     return response
 
