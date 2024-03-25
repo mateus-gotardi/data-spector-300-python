@@ -1,9 +1,43 @@
 from datetime import datetime, timedelta
+def formatar_data(data_str):
+    try:
+        data_obj = datetime.strptime(data_str, "%Y-%m-%d %H:%M:%S")
+        return data_obj.strftime("%m/%d/%y %H:%M")
+    except ValueError:
+        try:
+            data_obj = datetime.strptime(data_str, "%m/%d/%y %H:%M")
+            return data_obj.strftime("%m/%d/%y %H:%M")
+        except ValueError:
+            return data_str
+def formatar_data_prox_ciclo(data_str):
+    try:
+        data_obj = datetime.strptime(data_str, "%Y-%m-%d %H:%M:%S")
+        return data_obj.strftime("%d/%m/%Y")
+    except ValueError:
+        return data_str
 
-def processar_linha(linha):
+def processar_linha(linha, tipo_arquivo):
     colunas = []
     coluna = ""
     dentro_das_aspas = False
+
+    if tipo_arquivo == "xlsx":
+        colunas = linha.split(",")
+        for i in range(len(colunas)):
+            if i in [0, 1]:
+                colunas[i] = str(int(float(colunas[i])))
+            elif i in [2, 4]:
+                colunas[i] = formatar_data(colunas[i])
+            elif i == 5 and colunas[i] == "None":
+                colunas[i] = ""
+            elif i == 5 and colunas[i] != "None":
+                colunas[i] = formatar_data(colunas[i])
+            elif i == 6:
+                colunas[i] = colunas[i].replace(".", ",")
+                colunas[i] = '"'+colunas[i]+'"'
+            elif i == 7:
+                colunas[i] = formatar_data_prox_ciclo(colunas[i])
+        return colunas
 
     for char in linha:
         if char == ',' and not dentro_das_aspas:
@@ -11,7 +45,6 @@ def processar_linha(linha):
             coluna = ""
         else:
             coluna += char
-
             if char == '"':
                 dentro_das_aspas = not dentro_das_aspas
     
