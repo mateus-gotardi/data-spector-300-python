@@ -3,7 +3,7 @@ from flask_cors import CORS
 from functions import processar_linha, make_yy_mm, calc_data
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "*"}})
+CORS(app, resources={r"/*": {"origins": "https://data-spector-300-vue.vercel.app"}})
 @app.route('/upload', methods=['POST'])
 def upload_file():
     if 'file' not in request.files:
