@@ -13,6 +13,29 @@
  - Pytest
  - Flask
 
+## Modelo de resposta
+ A resposta da requisição é um objeto no seguinte formato:
+{
+        'general': {
+            'churn_rate': média do churn rate para todo o período analisado,
+            'churn_amount': total de churns para todo o período analisado,
+            'cancels': total de cancelamentos para todo o período analisado,
+            'users_active': total de clientes ativos em todo o período analisado
+        },
+        'monthly': {
+            'mrr': {mes: mrr ...},
+            'new_clients': {mes: novos clientes nesse mês ...},
+            'new_clients_amount': {mes: valor total das novas assinaturas do mês ...},
+            'churn_rate':{mes: churn rate do mês ...},
+            'cancels': {mes: cancelamentos no mês ...},
+            'churn_amount':{mes: valor que não será mais recebido a partir desse mes...},
+            'users_active': {mes: usuários ativos no final do mês...},
+            'user_growth': {mes: numero total de usuários ativos e cancelados que ja utilizaram o sistema até aquele mês...},
+        },
+        'years': [], #lista com todos os anos do espaço amostral
+        'months': [] #lista com todos os meses do espaço amostral
+}
+  
 # Setup do Projeto na sua máquina
  Tenha certeza que possui Python intalado.
  Clone ou baixe o repositório e rode o ambiente virtual utilizando
