@@ -20,6 +20,10 @@
 ```sh
 venv\Scripts\activate
 ```
+altere o cors para permitir requisições de qualquer fonte ou do seu localhost
+```sh
+linha 7 app.py: CORS(app, resources={r"/*": {"origins": "*"}})
+```
 ### Rode o servidor
 utilize o comando
 ```sh
