@@ -15,6 +15,7 @@
 
 ## Modelo de resposta
  A resposta da requisição é um objeto no seguinte formato:
+ ```sh
 {
         'general': {
             'churn_rate': média do churn rate para todo o período analisado,
@@ -35,7 +36,7 @@
         'years': [], #lista com todos os anos do espaço amostral
         'months': [] #lista com todos os meses do espaço amostral
 }
-  
+```
 # Setup do Projeto na sua máquina
  Tenha certeza que possui Python intalado.
  Clone ou baixe o repositório e rode o ambiente virtual utilizando
